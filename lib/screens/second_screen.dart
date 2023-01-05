@@ -1,53 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:riverpod_basic/main.dart';
+import '../service/fetchapi_provider.dart';
 
 class SecondScreen extends ConsumerWidget {
-  const SecondScreen({Key? key}) : super(key: key);
-
-
-  void onsubmitname (WidgetRef ref , String textValue ){
-    ref.read(nameProvider.notifier).updateName(textValue);
-    ref.refresh(nameProvider);
-
-  }
-  void onsubmitAge (WidgetRef ref , String textValue ){
-    ref.read(nameProvider.notifier).updateAgee(int.parse(textValue));
-
-  }
-
-
+   SecondScreen({Key? key}) : super(key: key);
+  ScrollController _controller= ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(nameProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title:  Text('StateProvider ${user.age.toString()}'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                TextField(
-                  onChanged: (textValue)=>onsubmitname(ref,textValue),
-                ),
-                TextField(
-                  onChanged:(textValue)=>onsubmitAge(ref,textValue) ,
-                ),
-              ],
-            ),
+    return ref.watch(fetchapiProvider).when(data: (data) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Riverpod Api Fetch'),
+          actions: [
+            IconButton(onPressed: (){
+              Navigator.pushNamed(context, '/second');
+            }, icon: Icon(Icons.arrow_forward_outlined),)
+          ],
+        ),
+        body: Container(
+          child: Column(
+            children:  [
+              Expanded(
+                child: ListView.builder(
+                  controller: _controller,
+                    itemCount: data.records.length,
+                    scrollDirection: Axis.horizontal,
 
-          ),
-          Expanded(child: Column(
-            children: [
-              Text(user.name.toString()),
-              Text(user.age.toString())
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Container(
+
+                            height: MediaQuery.of(context).size.height * .15,
+                            width: MediaQuery.of(context).size.width * .4,
+
+
+
+
+                            child: Center(
+                              child: InkWell(
+
+                                child: Card(
+                                  margin: EdgeInsets.all(8),
+                                  color:  Color(0xff005981),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              '  ${data.records[index].responsibleName
+                                                  .toString()}',
+                                              style: const TextStyle(fontSize: 25,color: Colors.white),
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              '  ${DateFormat('yyyy-MM-dd').format(data.records[index].startDate)}',
+                                              style: const TextStyle(fontSize: 25,color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      //Expanded(child: CircularProgressIndicator())
+                                    ],
+                                  ),
+                                ),
+                                onTap: (){
+                                  double changedPosition = _controller.position.pixels + 100.0 ;
+                                  _controller.position.jumpTo(changedPosition);
+                                  print('Tapped');
+
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+              )
             ],
-          )),
-        ],
-      ),
-    );
+          ),
+        ),
+      );
+    }, error: (Object error, StackTrace stackTrace) {
+      return Text(error.toString());
+    }, loading: () {
+      return const Center(child: CircularProgressIndicator());
+    });
   }
 }

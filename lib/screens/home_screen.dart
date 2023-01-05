@@ -7,6 +7,7 @@ import '../service/fetchapi_provider.dart';
 class HomePage extends ConsumerWidget {
   const HomePage({Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(fetchapiProvider).when(data: (data) {
@@ -25,6 +26,7 @@ class HomePage extends ConsumerWidget {
           Expanded(
             child: ListView.builder(
             itemCount: data.records.length,
+
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
