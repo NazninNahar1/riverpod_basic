@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context)=>HomePage(),
-        '/second': (context)=> SecondScreen(),
+        '/second': (context)=> Second(),
 
       },
     );
