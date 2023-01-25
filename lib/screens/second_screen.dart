@@ -32,6 +32,12 @@ class _SecondState extends  ConsumerState<Second> {
   }
   Future galleryImage() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final File? file = File(image!.path);
+    setState(() {
+      images.add(file);
+      print(images.length);
+      print(file);
+    });
   }
 
 
@@ -106,6 +112,7 @@ class _SecondState extends  ConsumerState<Second> {
                               double changedPosition = _controller.position.pixels + 100.0 ;
                               _controller.position.jumpTo(changedPosition);
                               print('Tapped');
+
 
                             },
                           ),
